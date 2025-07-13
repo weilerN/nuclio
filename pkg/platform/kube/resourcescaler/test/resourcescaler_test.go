@@ -43,6 +43,7 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes"
 	k8stesting "k8s.io/client-go/testing"
 	"k8s.io/metrics/pkg/apis/custom_metrics/v1beta2"
 	"k8s.io/metrics/pkg/client/custom_metrics/fake"
@@ -75,7 +76,14 @@ func (suite *ResourceScalerTestSuite) SetupSuite() {
 		Duration: 5 * time.Second,
 	}
 
-	suite.dlx, err = dlx.NewDLX(suite.Logger, resourceScaler, resourceScalerConfig.DLXOptions)
+	// create kube client set
+	restConfig, err := common.GetClientConfig(common.GetKubeconfigPath(""))
+	suite.Require().NoError(err)
+
+	kubeClientSet, err := kubernetes.NewForConfig(restConfig)
+	suite.Require().NoError(err)
+
+	suite.dlx, err = dlx.NewDLX(suite.Logger, resourceScaler, resourceScalerConfig.DLXOptions, kubeClientSet)
 	suite.Require().NoError(err)
 
 	go func() {
