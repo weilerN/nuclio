@@ -90,6 +90,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.3.6 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dghubble/trie v0.1.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/eapache/go-resiliency v1.7.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
@@ -200,3 +201,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.7.0 // indirect
 	zombiezen.com/go/capnproto2 v2.17.0+incompatible // indirect
 )
+
+// TODO - should be removed once we have a new scaler release
+replace github.com/v3io/scaler => github.com/weilerN/scaler v0.9.1-0.20250714063734-13e61e46703c
