@@ -20,8 +20,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/nuclio/nuclio/pkg/common"
@@ -40,8 +38,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
-
-var nuclioTargetAnnotationRegex = regexp.MustCompile(`proxy_set_header\s+X-Nuclio-Target\s+"([^"]+)"`)
 
 // NuclioResourceScaler leverages github.com/v3io/scaler
 // to allow extending scale to zero and from zero nuclio functions
@@ -414,7 +410,7 @@ func (n *NuclioResourceScaler) verifyReadiness(ctx context.Context, function *nu
 }
 
 // ResolveTargetsFromIngressCallback is scalertype.ResolveTargetsFromIngressCallback callback that extracts
-// Nuclio function target names from an Ingress, supporting both labels and annotations for backward compatibility.
+// Nuclio function target names from the ingress labels
 func ResolveTargetsFromIngressCallback(ingress *networkingv1.Ingress) ([]string, error) {
 	if ingress == nil {
 		return nil, errors.New("Ingress is nil")
@@ -427,27 +423,5 @@ func ResolveTargetsFromIngressCallback(ingress *networkingv1.Ingress) ([]string,
 		return []string{resourceLabelName}, nil
 	}
 
-	// try to get the targets from the ingress annotations for backward compatibility
-	if annotation, exists := ingress.Annotations[common.NginxConfigurationSnippetAnnotationKey]; exists {
-		targets, err := extractTargetsFromAnnotation(annotation)
-		if err != nil {
-			return nil, errors.Wrap(err, "Failed to extract resource names from the configuration snippet annotation")
-		}
-		if len(targets) == 0 {
-			return nil, errors.New("No resource names found in the nginx configuration snippet annotation")
-		}
-
-		return targets, nil
-	}
-
-	return nil, errors.New(fmt.Sprintf("Failed to resolve ingress targets, no function name label or annotation found. ingressName: %s", ingress.Name))
-}
-
-func extractTargetsFromAnnotation(annotation string) ([]string, error) {
-	matches := nuclioTargetAnnotationRegex.FindStringSubmatch(annotation)
-	if len(matches) < 2 {
-		return nil, errors.New("No Nuclio targets found in annotation")
-	}
-	targets := strings.Split(matches[1], ",")
-	return targets, nil
+	return nil, errors.New(fmt.Sprintf("Failed to resolve ingress targets, no function name labels found. ingressName: %s", ingress.Name))
 }

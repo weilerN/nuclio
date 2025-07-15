@@ -36,52 +36,6 @@ type ResourceScalerTestSuite struct {
 	suite.Suite
 }
 
-func (suite *ResourceScalerTestSuite) TestExtractTargetsFromAnnotation() {
-	for _, testCase := range []struct {
-		name           string
-		annotation     string
-		expectedResult []string
-		expectError    bool
-		errorMsg       string
-	}{
-		{
-			name: "Valid annotation with a canary target",
-			annotation: `proxy_set_header X-Nuclio-Target
-      "test6,test7";`,
-			expectedResult: []string{"test6", "test7"},
-		}, {
-			name:           "Valid annotation with a canary target one line regex",
-			annotation:     `proxy_set_header X-Nuclio-Target "test6,test7";`,
-			expectedResult: []string{"test6", "test7"},
-		}, {
-			name:           "Valid annotation with one target one line regex",
-			annotation:     `proxy_set_header X-Nuclio-Target "test6";`,
-			expectedResult: []string{"test6"},
-		}, {
-			name:        "Invalid regex- no targets",
-			annotation:  `proxy_set_header X-Nuclio-Target ;`,
-			expectError: true,
-			errorMsg:    "No Nuclio targets found in annotation",
-		}, {
-			name:        "Invalid regex- bad format",
-			annotation:  `proxy_set_header some-header "test6,test7";`,
-			expectError: true,
-			errorMsg:    "No Nuclio targets found in annotation",
-		},
-	} {
-		suite.Run(testCase.name, func() {
-			res, err := extractTargetsFromAnnotation(testCase.annotation)
-			if testCase.expectError {
-				suite.Require().Error(err, "Expected error for annotation: %s", testCase.annotation)
-				suite.Require().Contains(err.Error(), testCase.errorMsg, "Unexpected error message for annotation: %s", testCase.annotation)
-			} else {
-				suite.Require().NoError(err, "Unexpected error for annotation: %s", testCase.annotation)
-				suite.Require().Equal(testCase.expectedResult, res, "Unexpected result for annotation: %s", testCase.annotation)
-			}
-		})
-	}
-}
-
 func (suite *ResourceScalerTestSuite) TestGetResolveTargetsFromIngressCallback() {
 	for _, testCase := range []struct {
 		name           string
@@ -122,7 +76,8 @@ func (suite *ResourceScalerTestSuite) TestGetResolveTargetsFromIngressCallback()
 					},
 				},
 			},
-			expectedResult: []string{"test6", "test7"},
+			expectError: true,
+			errorMsg:    "Failed to resolve ingress targets",
 		},
 		{
 			name: "No labels or annotation",
