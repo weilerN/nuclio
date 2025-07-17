@@ -86,7 +86,7 @@ func (ago *apiGatewayOperator) CreateOrUpdate(ctx context.Context, object runtim
 
 	_, shouldMigrate := apiGateway.Annotations[common.NginxConfigurationSnippetAnnotationKey]
 	// validate the state is inside states to respond to
-	if !ago.shouldRespondToState(apiGateway.Status.State) || !shouldMigrate {
+	if !ago.shouldRespondToState(apiGateway.Status.State) && !shouldMigrate {
 		ago.logger.DebugWithCtx(ctx, "Api gateway state is not waiting for creation/update, skipping create/update",
 			"name", apiGateway.Spec.Name,
 			"state", apiGateway.Status.State)
