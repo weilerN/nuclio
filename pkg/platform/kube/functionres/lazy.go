@@ -2300,9 +2300,9 @@ func (lc *lazyClient) populateIngressConfig(ctx context.Context,
 		break
 	}
 
+	lc.logger.WarnWith("KAWABANGA! Remove the ingress annotations for function")
 	// set nuclio target header on ingress
-	meta.Annotations[common.NginxConfigurationSnippetAnnotationKey] = fmt.Sprintf(
-		`proxy_set_header X-Nuclio-Target "%s";`, function.Name)
+	delete(meta.Annotations,common.NginxConfigurationSnippetAnnotationKey)
 
 	// Check if function is a scale to zero candidate
 	//			is not disabled
