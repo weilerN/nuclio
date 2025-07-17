@@ -80,10 +80,10 @@ func (suite *ResourceScalerTestSuite) SetupSuite() {
 	restConfig, err := common.GetClientConfig(common.GetKubeconfigPath(""))
 	suite.Require().NoError(err)
 
-	kubeClientSet, err := kubernetes.NewForConfig(restConfig)
+	resourceScalerConfig.DLXOptions.KubeClientSet, err = kubernetes.NewForConfig(restConfig)
 	suite.Require().NoError(err)
 
-	suite.dlx, err = dlx.NewDLX(suite.Logger, resourceScaler, resourceScalerConfig.DLXOptions, kubeClientSet)
+	suite.dlx, err = dlx.NewDLX(suite.Logger, resourceScaler, resourceScalerConfig.DLXOptions)
 	suite.Require().NoError(err)
 
 	go func() {

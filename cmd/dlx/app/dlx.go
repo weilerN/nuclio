@@ -75,11 +75,6 @@ func newDLX(platformConfigurationPath string,
 		return nil, errors.Wrap(err, "Failed to get client configuration")
 	}
 
-	kubeClientSet, err := kubernetes.NewForConfig(restConfig)
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to create k8s client set")
-	}
-
 	nuclioClientSet, err := nuclioioclient.NewForConfig(restConfig)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to create nuclio client set")
@@ -103,8 +98,13 @@ func newDLX(platformConfigurationPath string,
 		return nil, errors.Wrap(err, "Failed to get resource scaler config")
 	}
 
+	resourceScalerConfig.DLXOptions.KubeClientSet, err = kubernetes.NewForConfig(restConfig)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to create k8s client set")
+	}
+
 	// create dlx instance
-	dlxInstance, err := dlx.NewDLX(rootLogger, resourceScaler, resourceScalerConfig.DLXOptions, kubeClientSet)
+	dlxInstance, err := dlx.NewDLX(rootLogger, resourceScaler, resourceScalerConfig.DLXOptions)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to create dlx instance")
 	}
