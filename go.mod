@@ -203,4 +203,4 @@ require (
 )
 
 // TODO - should be removed once we have a new scaler release
-replace github.com/v3io/scaler => github.com/weilerN/scaler v0.9.1-0.20250714063734-13e61e46703c
+replace github.com/v3io/scaler => github.com/weilerN/scaler v0.9.1-0.20250717100547-9f812b61854c
