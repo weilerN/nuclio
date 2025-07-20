@@ -93,6 +93,8 @@ func (ago *apiGatewayOperator) CreateOrUpdate(ctx context.Context, object runtim
 	//		"state", apiGateway.Status.State)
 	//	return nil
 	//}
+	ago.logger.WarnWith("KAWABANGA - TEST",
+		"apiGateway.Annotations",apiGateway.Annotations)
 
 	apiGateway.Status.Description = apiGateway.Spec.Description
 
